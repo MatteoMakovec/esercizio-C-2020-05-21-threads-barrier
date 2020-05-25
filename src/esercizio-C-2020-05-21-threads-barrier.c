@@ -94,8 +94,9 @@ void * thread_function(void * arg) {
 
 int main(int argc, char *argv[]) {
 	char * file_name = "/home/utente/prova.txt";
-	pthread_t t[NUMBER_OF_THREADS];
-	int res;
+	pthread_t *t;
+	t = malloc(sizeof(pthread_t));
+	int res = 0;
 
 	fd = open(file_name, O_RDWR | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
 	CHECK_ERR(res,"open()")
@@ -107,12 +108,13 @@ int main(int argc, char *argv[]) {
 	CHECK_ERR(res,"pthread_create()")
 
 	for(int i=0; i<NUMBER_OF_THREADS; i++){
+		t = realloc(t, (i+1)*sizeof(pthread_t));
 		res = pthread_create(&t[i], NULL, thread_function, NULL);
 		CHECK_ERR(res,"pthread_create()")
 	}
 
 	for(int i=0; i<NUMBER_OF_THREADS; i++){
-		res = pthread_join(&t[i], NULL);
+		res = pthread_join(t[i], NULL);
 		CHECK_ERR(res,"pthread_join()")
 	}
 
